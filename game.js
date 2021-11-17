@@ -35,14 +35,14 @@ const GameBoard = (() => {
       if (boardArray[i][0] != '') {
         if (boardArray[i][0] == boardArray[i][1] && boardArray[i][0] == boardArray[i][2]) {
           console.log('game over, row match!');
-          return;
+          return boardArray[i][0];
         }
       }
 
       if (boardArray[0][i] != '') {
         if (boardArray[0][i] == boardArray[1][i] && boardArray[0][i] == boardArray[2][i]) {
           console.log('game over, column match!');
-          return;
+          return boardArray[0][i];
         }
       }
     }
@@ -59,6 +59,7 @@ const GameBoard = (() => {
 
     if (filledBoardFlag) {
       console.log('draw!');
+      return 'draw';
     } else {
       console.log('game can continue');
     }
@@ -72,17 +73,34 @@ const GameBoard = (() => {
   };
 })();
 
-const Player = (playerName, playerMark) => {
-  return {playerName, playerMark};
+const Player = (_name, _mark) => {
+
+  return {_name, _mark};
 };
 
 const DisplayController = (() => {
-  //const assignPlayerMark = (playerName, playerMark) =>
-  //const announceWinner = () =>
+
+  const announceWinner = (playerA, playerB) => {
+    var winMark = GameBoard.gameOver();
+
+    if (winMark == 'draw') {
+      console.log('draw!');
+    } else if (winMark == 'x' || winMark == 'o') {
+      winMark == playerA._mark ? console.log(playerA._name + ' wins') : console.log(playerB._name +' wins');
+    } else {
+      console.log('game is not finished');
+    }
+  };
+
+  return {announceWinner};
 })();
 
-// GameBoard.displayBoard();
+
+const playerA = Player('A', 'x');
+const playerB = Player('B', 'o');
+
 GameBoard.writeToBoard(0,0,'x');
 GameBoard.writeToBoard(1,0,'o');
 GameBoard.displayBoard();
 GameBoard.gameOver();
+DisplayController.announceWinner(playerA, playerB);
