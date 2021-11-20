@@ -1,4 +1,7 @@
 const boardCells = document.getElementsByClassName('cell');
+const optionPanel = document.getElementById('optionPanel');
+var user = '';
+var ai = '';
 
 const GameBoard = (() => {
   //store gameboard as an array in here
@@ -7,9 +10,6 @@ const GameBoard = (() => {
     ['o', 'x', 'o'],
     ['o', 'o', 'x']
   ]
-
-  //turn variable to know whose turn right now. 0: play first, 1: play second
-  var turn = 0;
 
   // function displayBoard() {
   //   boardArray.map( function(row, rowIndex) {
@@ -85,15 +85,20 @@ const Player = (_name, _mark) => {
 
 const DisplayController = (() => {
 
+  //display winner banner
   const announceWinner = (playerA, playerB) => {
     var winMark = GameBoard.gameOver();
 
     if (winMark == 'draw') {
       console.log('draw!');
+      return true;
     } else if (winMark == 'x' || winMark == 'o') {
       winMark == playerA._mark ? console.log(playerA._name + ' wins') : console.log(playerB._name +' wins');
+      var winner = winMark == playerA._mark ? playerA._name : playerB._name;
+      return true;
     } else {
       console.log('game is not finished');
+      return false;
     }
   };
 
@@ -106,13 +111,37 @@ Array.from(boardCells).map((cell) => {
   cell.addEventListener("click", function() {
     console.log('cell is clicked');
   })
-})
+});
 
-const user = Player('user', 'x');
-const ai = Player('AI', 'o');
+function initializePlayer(mark) {
+  user = Player('user', mark);
+  ai = Player('AI', 'O');
+  optionPanel.style.display = 'none';
+}
 
 GameBoard.writeToBoard(0,0,'x');
 GameBoard.writeToBoard(1,0,'o');
 GameBoard.displayBoard();
 GameBoard.gameOver();
 DisplayController.announceWinner(user, ai);
+
+function startGame() {
+  //turn variable to know whose turn right now. 0: play first, 1: play second
+  var turn = 0;
+
+  while (!DisplayController.announceWinner(user, ai)) {
+    if (turn == 0) {
+      if (user._mark == 'x') {
+        console.log('user plays');
+      } else {
+        console.log('ai plays');
+      }
+    } else {
+      if (user._mark == 'o') {
+        console.log('user plays');
+      } else {
+        console.log('ai plays');
+      }
+    }
+  }
+}

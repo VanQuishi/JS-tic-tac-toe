@@ -14,7 +14,7 @@ body{
   font-size: 4rem;
 }
 
-.optionPanel {
+#optionPanel {
   display: flex;
   flex-direction: column;
   gap: 10px;
