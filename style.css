@@ -1,8 +1,49 @@
 body{
+  height: 100vh;
+  margin: 0;
   display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 1.5rem;
+  font-family: Roboto sans-serif;
+  overflow-y: auto;
+}
+
+.title{
+  font-size: 4rem;
+}
+
+.optionPanel {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.optionBtn {
+  display: flex;
+  justify-content: space-between;
+}
+.optionBtn button {
+  border-radius: 0.2rem;
+  padding: 1rem 2rem;
+  text-align: center;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.infoPanel {
+  display: flex; 
+  justify-content: space-between;
+  align-items: center;
+  gap: 4rem;
+}
+
+.playerInfo {
+  display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
-  font-size: 1rem;
 }
 
 .board {
@@ -17,7 +58,12 @@ body{
 
 .cell {
   border: 1px solid black;
-  padding: 50px;
+  padding: 4rem;
+  cursor: pointer;
+}
+.cell:hover{
+  transform: scale(1.15);
+  transition: 0.2s;
 }
 
 .no-borderleft {

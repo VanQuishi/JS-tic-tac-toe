@@ -1,3 +1,5 @@
+const boardCells = document.getElementsByClassName('cell');
+
 const GameBoard = (() => {
   //store gameboard as an array in here
   var boardArray = [
@@ -5,6 +7,9 @@ const GameBoard = (() => {
     ['o', 'x', 'o'],
     ['o', 'o', 'x']
   ]
+
+  //turn variable to know whose turn right now. 0: play first, 1: play second
+  var turn = 0;
 
   // function displayBoard() {
   //   boardArray.map( function(row, rowIndex) {
@@ -95,12 +100,19 @@ const DisplayController = (() => {
   return {announceWinner};
 })();
 
+//boardCells are not strictly Array but a HTMLCollection.
+// We need to cast it in Array to use map
+Array.from(boardCells).map((cell) => {
+  cell.addEventListener("click", function() {
+    console.log('cell is clicked');
+  })
+})
 
-const playerA = Player('A', 'x');
-const playerB = Player('B', 'o');
+const user = Player('user', 'x');
+const ai = Player('AI', 'o');
 
 GameBoard.writeToBoard(0,0,'x');
 GameBoard.writeToBoard(1,0,'o');
 GameBoard.displayBoard();
 GameBoard.gameOver();
-DisplayController.announceWinner(playerA, playerB);
+DisplayController.announceWinner(user, ai);

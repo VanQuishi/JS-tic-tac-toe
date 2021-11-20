@@ -3,26 +3,54 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
+  <title>Tic Tac Toe</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <div class="title">
+    Tic Tac Toe
+  </div>
+
+  <div class="optionPanel">
+    <div>Choose your mark:</div>
+    <div class="optionBtn">
+      <button>X</button>
+      <button>O</button>
+    </div>
+  </div>
+  
+
+  <div class="infoPanel">
+    <div class="playerInfo">
+      <div>[MARK]</div>
+      <div>Player name</div>
+    </div>
+    <div class="playerInfo">
+      <div>[MARK]</div>
+      <div>Player name</div>
+    </div>
+  </div>
+
   <div class="board">
     <div class="boardRow">
-      <div class="cell no-borderleft no-bordertop" id="c00">1</div>
-      <div class="cell no-bordertop" id="c01">1</div>
-      <div class="cell no-borderright no-bordertop" id="c02">1</div>
+      <div class="cell no-borderleft no-bordertop" id="c00"></div>
+      <div class="cell no-bordertop" id="c01"></div>
+      <div class="cell no-borderright no-bordertop" id="c02"></div>
     </div>
     <div class="boardRow">
-      <div class="cell no-borderleft" id="c10">1</div>
-      <div class="cell" id="c11">1</div>
-      <div class="cell no-borderright" id="c12">1</div>
+      <div class="cell no-borderleft" id="c10"></div>
+      <div class="cell" id="c11"></div>
+      <div class="cell no-borderright" id="c12"></div>
     </div>
     <div class="boardRow">
-      <div class="cell no-borderleft no-borderbottom" id="c20">1</div>
-      <div class="cell no-borderbottom" id="c21">1</div>
-      <div class="cell no-borderright no-borderbottom" id="c22">1</div>
+      <div class="cell no-borderleft no-borderbottom" id="c20"></div>
+      <div class="cell no-borderbottom" id="c21"></div>
+      <div class="cell no-borderright no-borderbottom" id="c22"></div>
     </div>   
+  </div>
+
+  <div>
+    Footer
   </div>
 
   <script src="game.js"></script>
