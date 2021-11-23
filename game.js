@@ -5,10 +5,15 @@ var ai = '';
 
 const GameBoard = (() => {
   //store gameboard as an array in here
+  // var boardArray = [
+  //   ['x', 'x', 'x'],
+  //   ['o', 'x', 'o'],
+  //   ['o', 'o', 'x']
+  // ]
   var boardArray = [
-    ['x', 'x', 'x'],
-    ['o', 'x', 'o'],
-    ['o', 'o', 'x']
+    ['', '', ''],
+    ['', '', ''],
+    ['', '', '']
   ]
 
   // function displayBoard() {
@@ -84,8 +89,8 @@ const Player = (_name, _mark) => {
 };
 
 const DisplayController = (() => {
+  var turn = 0;
 
-  //display winner banner
   const announceWinner = (playerA, playerB) => {
     var winMark = GameBoard.gameOver();
 
@@ -102,46 +107,74 @@ const DisplayController = (() => {
     }
   };
 
-  return {announceWinner};
+  const displayMarkOnClick = (x, y, player) => {
+    GameBoard.writeToBoard(x, y, player._mark);
+    var markedCell = document.getElementById("c" + x + y);
+    markedCell.innerHTML = player._mark;
+  }
+
+  const playGame = (cell, playerA, playerB) => {
+    if (!DisplayController.announceWinner(playerA, playerB)) {
+      var coordinate = cell.id.split('');
+
+      if (turn % 2 == 0) {
+        if (playerA._mark == 'x') {
+          displayMarkOnClick(coordinate[1], coordinate[2], playerA);
+        } else {
+          displayMarkOnClick(coordinate[1], coordinate[2], playerB);
+        }
+
+        turn++;
+      } else {
+        if (playerA._mark == 'o') {
+          displayMarkOnClick(coordinate[1], coordinate[2], playerA);
+        } else {
+          displayMarkOnClick(coordinate[1], coordinate[2], playerB);
+        }
+        
+        turn++;
+      }
+    }
+  }
+
+  return {
+    announceWinner,
+    displayMarkOnClick,
+    playGame
+  };
 })();
 
 //boardCells are not strictly Array but a HTMLCollection.
 // We need to cast it in Array to use map
-Array.from(boardCells).map((cell) => {
-  cell.addEventListener("click", function() {
-    console.log('cell is clicked');
-  })
-});
+// Array.from(boardCells).map((cell) => {
+//   cell.addEventListener("click", function() {
+//     console.log('cell is clicked');
+//     var coordinate = cell.id.split();
+//     DisplayController.displayMarkOnClick(coordinate[1], coordinate[2], user);
+//   })
+// });
 
 function initializePlayer(mark) {
-  user = Player('user', mark);
-  ai = Player('AI', 'O');
+  if (mark == 'x') {
+    user = Player('user', 'x');
+    ai = Player('AI', 'o');
+  } else {
+    user = Player('user', 'o');
+    ai = Player('AI', 'x');
+    console.log(ai._mark);
+  }
+
   optionPanel.style.display = 'none';
 }
 
-GameBoard.writeToBoard(0,0,'x');
-GameBoard.writeToBoard(1,0,'o');
 GameBoard.displayBoard();
-GameBoard.gameOver();
-DisplayController.announceWinner(user, ai);
 
-function startGame() {
-  //turn variable to know whose turn right now. 0: play first, 1: play second
-  var turn = 0;
-
-  while (!DisplayController.announceWinner(user, ai)) {
-    if (turn == 0) {
-      if (user._mark == 'x') {
-        console.log('user plays');
-      } else {
-        console.log('ai plays');
-      }
-    } else {
-      if (user._mark == 'o') {
-        console.log('user plays');
-      } else {
-        console.log('ai plays');
-      }
-    }
-  }
-}
+Array.from(boardCells).map((cell) => {
+  cell.addEventListener("click", function() {
+    user = Player('user', 'x');
+    console.log(ai._mark);
+    console.log('cell is clicked');
+    
+    DisplayController.playGame(this, user, ai);
+  })
+});
