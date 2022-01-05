@@ -57,6 +57,12 @@ const GameBoard = (() => {
       }
     }
 
+    if ((boardArray[0][0] == boardArray[1][1] && boardArray[1][1] == boardArray[2][2]) || 
+    (boardArray[0][2] == boardArray[1][1] && boardArray[1][1] == boardArray[2][0])) {
+      console.log('game over, diagonal match!');
+      return boardArray[1][1];
+    }
+
     //no match is found. check if the board is filled => draw
     var filledBoardFlag = true;
 
@@ -71,7 +77,7 @@ const GameBoard = (() => {
       console.log('draw!');
       return 'draw';
     } else {
-      console.log('game can continue');
+      return 'continue';
     }
 
   }
@@ -114,27 +120,26 @@ const DisplayController = (() => {
   }
 
   const playGame = (cell, playerA, playerB) => {
-    if (!DisplayController.announceWinner(playerA, playerB)) {
-      var coordinate = cell.id.split('');
+    var coordinate = cell.id.split('');
 
-      if (turn % 2 == 0) {
-        if (playerA._mark == 'x') {
-          displayMarkOnClick(coordinate[1], coordinate[2], playerA);
-        } else {
-          displayMarkOnClick(coordinate[1], coordinate[2], playerB);
-        }
-
-        turn++;
+    if (turn % 2 == 0) {
+      if (playerA._mark == 'x') {
+        displayMarkOnClick(coordinate[1], coordinate[2], playerA);
       } else {
-        if (playerA._mark == 'o') {
-          displayMarkOnClick(coordinate[1], coordinate[2], playerA);
-        } else {
-          displayMarkOnClick(coordinate[1], coordinate[2], playerB);
-        }
-        
-        turn++;
+        displayMarkOnClick(coordinate[1], coordinate[2], playerB);
+      }
+    } else {
+      if (playerA._mark == 'o') {
+        displayMarkOnClick(coordinate[1], coordinate[2], playerA);
+      } else {
+        displayMarkOnClick(coordinate[1], coordinate[2], playerB);
       }
     }
+
+    DisplayController.announceWinner(playerA, playerB);
+
+    turn++;
+    console.log({turn});
   }
 
   return {
@@ -143,16 +148,6 @@ const DisplayController = (() => {
     playGame
   };
 })();
-
-//boardCells are not strictly Array but a HTMLCollection.
-// We need to cast it in Array to use map
-// Array.from(boardCells).map((cell) => {
-//   cell.addEventListener("click", function() {
-//     console.log('cell is clicked');
-//     var coordinate = cell.id.split();
-//     DisplayController.displayMarkOnClick(coordinate[1], coordinate[2], user);
-//   })
-// });
 
 function initializePlayer(mark) {
   if (mark == 'x') {
@@ -169,12 +164,10 @@ function initializePlayer(mark) {
 
 GameBoard.displayBoard();
 
+//boardCells are not strictly Array but a HTMLCollection.
+// We need to cast it in Array to use map
 Array.from(boardCells).map((cell) => {
   cell.addEventListener("click", function() {
-    user = Player('user', 'x');
-    console.log(ai._mark);
-    console.log('cell is clicked');
-    
     DisplayController.playGame(this, user, ai);
   })
 });
