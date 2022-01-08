@@ -82,10 +82,29 @@ const GameBoard = (() => {
 
   }
 
+  const randomizeNextMove = () =>{
+    var emptyPositions = [];
+
+    boardArray.map((row, rowIndex) => {
+      row.map((cellMark, cellIndex) => {
+        var position = [];
+        if (cellMark == '') {
+          position.push(rowIndex);
+          position.push(cellIndex);
+          emptyPositions.push(position);
+        }
+      });
+    });
+
+    var randomIndex = Math.floor(Math.random() * (emptyPositions.length - 0) + 0);
+    return emptyPositions[randomIndex];
+  }
+
   return {
     displayBoard,
     writeToBoard,
-    gameOver
+    gameOver,
+    randomizeNextMove
   };
 })();
 
@@ -126,13 +145,15 @@ const DisplayController = (() => {
       if (playerA._mark == 'x') {
         displayMarkOnClick(coordinate[1], coordinate[2], playerA);
       } else {
-        displayMarkOnClick(coordinate[1], coordinate[2], playerB);
+        
+        displayMarkOnClick(AINextMove[0], AINextMove[1], playerB);
       }
     } else {
       if (playerA._mark == 'o') {
         displayMarkOnClick(coordinate[1], coordinate[2], playerA);
       } else {
-        displayMarkOnClick(coordinate[1], coordinate[2], playerB);
+        var AINextMove = GameBoard.randomizeNextMove();
+        displayMarkOnClick(AINextMove[0], AINextMove[1], playerB);
       }
     }
 
@@ -168,6 +189,19 @@ GameBoard.displayBoard();
 // We need to cast it in Array to use map
 Array.from(boardCells).map((cell) => {
   cell.addEventListener("click", function() {
+    //first call of function is for player move
+    DisplayController.playGame(this, user, ai);
+
+    //second call of function is for AI move
     DisplayController.playGame(this, user, ai);
   })
 });
+
+
+//To-Do:
+/*
+- Make random move for easy mode and use Minimax for advanced mode
+- Disable click event for all board cells before user chooses a mark
+- Add a time delay before AI move for a natural experience
+- Code Minimax decision rule for AI
+*/
