@@ -100,11 +100,31 @@ const GameBoard = (() => {
     return emptyPositions[randomIndex];
   }
 
+  const AINextMove = (emptyPositions, visitedPositions, currentScore) => {
+    var score = 0;
+    var targetedPosition;
+    for (var i = 0; i < emptyPositions.length; i++) {
+      if (visitedPositions[i] == false) {
+        visitedPositions[i] = true;
+        //fill in empty position on the board
+        //if it's all filled: calculate score
+        //else: AINextMove(emptyPositions, visitedPositions, score)
+        //remove marker from the position on the board
+        visitedPositions[i] = false;
+      }
+    }
+
+    if (score > currentScore) {
+      return targetedPosition;
+    }
+  }
+
   return {
     displayBoard,
     writeToBoard,
     gameOver,
-    randomizeNextMove
+    randomizeNextMove, 
+    AINextMove
   };
 })();
 
