@@ -4,12 +4,7 @@ var user = '';
 var ai = '';
 
 const GameBoard = (() => {
-  //store gameboard as an array in here
-  // var boardArray = [
-  //   ['x', 'x', 'x'],
-  //   ['o', 'x', 'o'],
-  //   ['o', 'o', 'x']
-  // ]
+  
   var boardArray = [
     ['', '', ''],
     ['', '', ''],
@@ -37,6 +32,10 @@ const GameBoard = (() => {
 
   const writeToBoard = (x, y, mark) => {
     boardArray[x][y] = mark;
+  }
+
+  const removeFromBoard = (x, y) => {
+    boardArray[x][y] = '';
   }
 
   const gameOver = () => {
@@ -82,7 +81,7 @@ const GameBoard = (() => {
 
   }
 
-  const randomizeNextMove = () =>{
+  const getAllEmptyPositions = () => {
     var emptyPositions = [];
 
     boardArray.map((row, rowIndex) => {
@@ -96,25 +95,53 @@ const GameBoard = (() => {
       });
     });
 
+    return emptyPositions;
+  }
+
+  const randomizeNextMove = () => {
+    var emptyPositions = getAllEmptyPositions();
+
     var randomIndex = Math.floor(Math.random() * (emptyPositions.length - 0) + 0);
     return emptyPositions[randomIndex];
   }
 
-  const AINextMove = (emptyPositions, visitedPositions, currentScore) => {
-    var score = 0;
+  const AINextMove = (emptyPositions, visitedPositions, currScore, currLevel, AImark, currMark) => {
     var targetedPosition;
+    var nextMark = currMark == 'x' ? 'o' : 'x';
+    var calculatedScore = 0;
+    currLevel++;
+    console.log('reached ainextmove()');
+
     for (var i = 0; i < emptyPositions.length; i++) {
       if (visitedPositions[i] == false) {
         visitedPositions[i] = true;
-        //fill in empty position on the board
-        //if it's all filled: calculate score
-        //else: AINextMove(emptyPositions, visitedPositions, score)
+        writeToBoard(emptyPositions[i][0], emptyPositions[i][1], currMark);
+        targetedPosition = [emptyPositions[i][0], emptyPositions[i][1]];
+
+        var result = gameOver();
+        if (result != 'continue') {
+          //calculate score
+          if (result == AImark) {
+            calculatedScore = (100 - currLevel) > currScore ? (100 - currLevel) : currScore;
+          }
+          else if (result == 'draw') {
+            calculatedScore = (0 - currLevel) > currScore ? (0 - currLevel) : currScore;
+          }
+          else {
+            calculatedScore = (-100 + currLevel) > currScore ? (-100 + currLevel) : currScore;
+          }
+        }
+        else {
+          AINextMove(emptyPositions, visitedPositions, currScore, currLevel, AImark, nextMark);
+        }
+
         //remove marker from the position on the board
         visitedPositions[i] = false;
+        removeFromBoard(emptyPositions[i][0], emptyPositions[i][1]);
       }
     }
 
-    if (score > currentScore) {
+    if (calculatedScore >= currentScore) {
       return targetedPosition;
     }
   }
@@ -134,6 +161,7 @@ const Player = (_name, _mark) => {
 };
 
 const DisplayController = (() => {
+  var difficulty = 'easy';
   var turn = 0;
 
   const announceWinner = (playerA, playerB) => {
@@ -160,19 +188,36 @@ const DisplayController = (() => {
 
   const playGame = (cell, playerA, playerB) => {
     var coordinate = cell.id.split('');
+    var AINextMove = [];
+    var emptyPositions = [];
+    var visitedPositions = [];
 
     if (turn % 2 == 0) {
       if (playerA._mark == 'x') {
         displayMarkOnClick(coordinate[1], coordinate[2], playerA);
       } else {
-        
+        if (difficulty == 'easy') {
+          AINextMove = GameBoard.randomizeNextMove();
+        } else {
+          emptyPositions = GameBoard.getAllEmptyPositions();
+          visitedPositions = Array(emptyPositions.length).fill(false);
+          AINextMove = GameBoard.AINextMove(emptyPositions, visitedPositions, 0, 0, 'o', 'o');
+          console.log({AINextMove});
+        }      
         displayMarkOnClick(AINextMove[0], AINextMove[1], playerB);
       }
     } else {
       if (playerA._mark == 'o') {
         displayMarkOnClick(coordinate[1], coordinate[2], playerA);
       } else {
-        var AINextMove = GameBoard.randomizeNextMove();
+        if (difficulty == 'easy') {
+          AINextMove = GameBoard.randomizeNextMove();
+        } else {
+          emptyPositions = GameBoard.getAllEmptyPositions();
+          visitedPositions = Array(emptyPositions.length).fill(false);
+          AINextMove = GameBoard.AINextMove(emptyPositions, visitedPositions, 0, 0, 'x', 'x');
+          console.log({AINextMove});
+        } 
         displayMarkOnClick(AINextMove[0], AINextMove[1], playerB);
       }
     }
@@ -186,9 +231,15 @@ const DisplayController = (() => {
   return {
     announceWinner,
     displayMarkOnClick,
-    playGame
+    playGame,
+    difficulty
   };
 })();
+
+function initializeDifficulty(option) {
+  DisplayController.difficulty = option;
+  console.log('difficulty', DisplayController.difficulty);
+}
 
 function initializePlayer(mark) {
   if (mark == 'x') {
@@ -217,6 +268,7 @@ Array.from(boardCells).map((cell) => {
   })
 });
 
+initializeDifficulty('difficult');
 
 //To-Do:
 /*
