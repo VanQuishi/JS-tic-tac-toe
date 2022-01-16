@@ -6,9 +6,9 @@ var ai = '';
 const GameBoard = (() => {
   
   var boardArray = [
-    ['', '', ''],
-    ['', '', ''],
-    ['', '', '']
+    ['x', '', 'o'],
+    ['', 'o', ''],
+    ['x', 'x', 'o']
   ]
 
   // function displayBoard() {
@@ -106,7 +106,7 @@ const GameBoard = (() => {
   }
 
   const AINextMove = (emptyPositions, visitedPositions, currScore, currLevel, AImark, currMark) => {
-    var targetedPosition;
+    var resultScore = [];
     var nextMark = currMark == 'x' ? 'o' : 'x';
     var calculatedScore = 0;
     currLevel++;
@@ -120,7 +120,7 @@ const GameBoard = (() => {
 
         var result = gameOver();
         if (result != 'continue') {
-          //calculate score
+
           if (result == AImark) {
             calculatedScore = (100 - currLevel) > currScore ? (100 - currLevel) : currScore;
           }
@@ -130,8 +130,11 @@ const GameBoard = (() => {
           else {
             calculatedScore = (-100 + currLevel) > currScore ? (-100 + currLevel) : currScore;
           }
+
+          resultScore.push(calculatedScore);
         }
         else {
+          console.log({currScore});
           AINextMove(emptyPositions, visitedPositions, currScore, currLevel, AImark, nextMark);
         }
 
@@ -141,9 +144,16 @@ const GameBoard = (() => {
       }
     }
 
-    if (calculatedScore >= currentScore) {
-      return targetedPosition;
+    var targetedIndex = -1;
+    var benchmark = 0;
+    for (var i = 0; i < resultScore.length; i++) {
+      if (resultScore[i] >= benchmark) {
+        targetedIndex = i;
+      }
     }
+
+    return [emptyPositions[targetedIndex][0], emptyPositions[targetedIndex][1]];
+ 
   }
 
   return {
@@ -151,7 +161,8 @@ const GameBoard = (() => {
     writeToBoard,
     gameOver,
     randomizeNextMove, 
-    AINextMove
+    AINextMove,
+    getAllEmptyPositions
   };
 })();
 
@@ -192,14 +203,17 @@ const DisplayController = (() => {
     var emptyPositions = [];
     var visitedPositions = [];
 
+    console.log({turn});
     if (turn % 2 == 0) {
       if (playerA._mark == 'x') {
         displayMarkOnClick(coordinate[1], coordinate[2], playerA);
       } else {
+        console.log({difficulty});
         if (difficulty == 'easy') {
           AINextMove = GameBoard.randomizeNextMove();
         } else {
           emptyPositions = GameBoard.getAllEmptyPositions();
+          console.log({emptyPositions});
           visitedPositions = Array(emptyPositions.length).fill(false);
           AINextMove = GameBoard.AINextMove(emptyPositions, visitedPositions, 0, 0, 'o', 'o');
           console.log({AINextMove});
@@ -210,10 +224,12 @@ const DisplayController = (() => {
       if (playerA._mark == 'o') {
         displayMarkOnClick(coordinate[1], coordinate[2], playerA);
       } else {
+        console.log({difficulty});
         if (difficulty == 'easy') {
           AINextMove = GameBoard.randomizeNextMove();
         } else {
           emptyPositions = GameBoard.getAllEmptyPositions();
+          console.log({emptyPositions});
           visitedPositions = Array(emptyPositions.length).fill(false);
           AINextMove = GameBoard.AINextMove(emptyPositions, visitedPositions, 0, 0, 'x', 'x');
           console.log({AINextMove});
@@ -225,21 +241,20 @@ const DisplayController = (() => {
     DisplayController.announceWinner(playerA, playerB);
 
     turn++;
-    console.log({turn});
+    
+  }
+
+  const setDifficulty = (option) => {
+    difficulty = option;
   }
 
   return {
     announceWinner,
     displayMarkOnClick,
     playGame,
-    difficulty
+    setDifficulty
   };
 })();
-
-function initializeDifficulty(option) {
-  DisplayController.difficulty = option;
-  console.log('difficulty', DisplayController.difficulty);
-}
 
 function initializePlayer(mark) {
   if (mark == 'x') {
@@ -254,6 +269,7 @@ function initializePlayer(mark) {
   optionPanel.style.display = 'none';
 }
 
+DisplayController.setDifficulty('difficult');
 GameBoard.displayBoard();
 
 //boardCells are not strictly Array but a HTMLCollection.
@@ -268,7 +284,7 @@ Array.from(boardCells).map((cell) => {
   })
 });
 
-initializeDifficulty('difficult');
+
 
 //To-Do:
 /*
