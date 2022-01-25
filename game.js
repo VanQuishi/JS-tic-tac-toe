@@ -11,6 +11,17 @@ const GameBoard = (() => {
     ['x', 'x', 'o']
   ]
 
+  // var emptyPositions = [
+  //   [0,0], [0,1], [0,2],
+  //   [1,0], [1,1], [1,2],
+  //   [2,0], [2,1], [2,2]
+  // ]
+
+  var emptyPositions = [
+    [0,1], 
+    [1,0], [1,2],
+  ]
+
   // function displayBoard() {
   //   boardArray.map( function(row, rowIndex) {
   //     row.map( function(cellMark, cellIndex) {
@@ -32,6 +43,7 @@ const GameBoard = (() => {
 
   const writeToBoard = (x, y, mark) => {
     boardArray[x][y] = mark;
+    updateEmptyPostions(x, y);
   }
 
   const removeFromBoard = (x, y) => {
@@ -82,20 +94,21 @@ const GameBoard = (() => {
   }
 
   const getAllEmptyPositions = () => {
-    var emptyPositions = [];
-
-    boardArray.map((row, rowIndex) => {
-      row.map((cellMark, cellIndex) => {
-        var position = [];
-        if (cellMark == '') {
-          position.push(rowIndex);
-          position.push(cellIndex);
-          emptyPositions.push(position);
-        }
-      });
-    });
 
     return emptyPositions;
+  }
+
+  const updateEmptyPostions = (x, y) => {
+    var removedIdx = -1;
+
+    for (var i = 0; i < emptyPositions.length; i++) {
+      if (emptyPositions[i][0] == x && emptyPositions[i][1] == y) {
+        removedIdx = i;
+        break;
+      }
+    }
+
+    emptyPositions.splice(removedIdx, 1);
   }
 
   const randomizeNextMove = () => {
@@ -105,8 +118,7 @@ const GameBoard = (() => {
     return emptyPositions[randomIndex];
   }
 
-  const AINextMove = (emptyPositions, visitedPositions, currLevel, AImark, currMark) => {
-    var resultScore = [];
+  const calculatePossibleMoves = (visitedPositions, currLevel, AImark, currMark, resultScores) => {
     var nextMark = currMark == 'x' ? 'o' : 'x';
     var calculatedScore = 0;
     currLevel++;
@@ -115,8 +127,11 @@ const GameBoard = (() => {
     for (var i = 0; i < emptyPositions.length; i++) {
       if (visitedPositions[i] == false) {
         visitedPositions[i] = true;
-        writeToBoard(emptyPositions[i][0], emptyPositions[i][1], currMark);
-        targetedPosition = [emptyPositions[i][0], emptyPositions[i][1]];
+
+        var x = emptyPositions[i][0];
+        var y = emptyPositions[i][1];
+        boardArray[x][y] = currMark;
+        targetedPosition = [x, y];
 
         var result = gameOver();
         if (result != 'continue') {
@@ -130,32 +145,39 @@ const GameBoard = (() => {
           else {
             calculatedScore = -100 + currLevel;
           }
-
-          resultScore.push(calculatedScore);
+          // visitedPositions[i] = false;
+          // removeFromBoard(x, y);
+          return calculatedScore;
         }
         else {
-          AINextMove(emptyPositions, visitedPositions, currLevel, AImark, nextMark);
+          resultScores.push(GetAINextMove(visitedPositions, currLevel, AImark, nextMark, resultScores));
+          visitedPositions[i] = false;
+          removeFromBoard(x, y);
         }
 
-        //remove marker from the position on the board
-        visitedPositions[i] = false;
-        removeFromBoard(emptyPositions[i][0], emptyPositions[i][1]);
+        //remove marker from the position on the board        
       }
     }
 
+    return resultScores;
+  }
+
+  const GetAINextMove = (AImark) => {
+    var visitedPositions = Array(emptyPositions.length).fill(false);
+    console.log({visitedPositions});
+
+    var resultScores = calculatePossibleMoves(visitedPositions, 0, AImark, AImark, []);
+
     var targetedIndex = 0;
-    var max = resultScore[0];
-    console.log({resultScore});
-    for (var i = 0; i < resultScore.length; i++) {
-      if (resultScore[i] > max) {
+    var max = resultScores[0];
+    console.log({resultScores});
+    for (var i = 0; i < resultScores.length; i++) {
+      if (resultScores[i] > max) {
         targetedIndex = i;
       }
     }
 
-    console.log({targetedIndex});
-    console.log({emptyPositions});
     return [emptyPositions[targetedIndex][0], emptyPositions[targetedIndex][1]];
- 
   }
 
   return {
@@ -163,7 +185,7 @@ const GameBoard = (() => {
     writeToBoard,
     gameOver,
     randomizeNextMove, 
-    AINextMove,
+    GetAINextMove,
     getAllEmptyPositions
   };
 })();
@@ -202,8 +224,6 @@ const DisplayController = (() => {
   const playGame = (cell, playerA, playerB) => {
     var coordinate = cell.id.split('');
     var AINextMove = [];
-    var emptyPositions = [];
-    var visitedPositions = [];
 
     console.log({turn});
     if (turn % 2 == 0) {
@@ -214,10 +234,7 @@ const DisplayController = (() => {
         if (difficulty == 'easy') {
           AINextMove = GameBoard.randomizeNextMove();
         } else {
-          emptyPositions = GameBoard.getAllEmptyPositions();
-          console.log({emptyPositions});
-          visitedPositions = Array(emptyPositions.length).fill(false);
-          AINextMove = GameBoard.AINextMove(emptyPositions, visitedPositions, 0, 'o', 'o');
+          AINextMove = GameBoard.GetAINextMove('o');
           console.log({AINextMove});
         }      
         displayMarkOnClick(AINextMove[0], AINextMove[1], playerB);
@@ -230,10 +247,7 @@ const DisplayController = (() => {
         if (difficulty == 'easy') {
           AINextMove = GameBoard.randomizeNextMove();
         } else {
-          emptyPositions = GameBoard.getAllEmptyPositions();
-          console.log({emptyPositions});
-          visitedPositions = Array(emptyPositions.length).fill(false);
-          AINextMove = GameBoard.AINextMove(emptyPositions, visitedPositions, 0, 'x', 'x');
+          AINextMove = GameBoard.GetAINextMove('x');
           console.log({AINextMove});
         } 
         displayMarkOnClick(AINextMove[0], AINextMove[1], playerB);
@@ -290,7 +304,8 @@ Array.from(boardCells).map((cell) => {
 
 //To-Do:
 /*
-- Make random move for easy mode and use Minimax for advanced mode
+x Make random move for easy mode 
+- Use Minimax for advanced mode
 - Disable click event for all board cells before user chooses a mark
 - Add a time delay before AI move for a natural experience
 - Code Minimax decision rule for AI
