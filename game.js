@@ -118,66 +118,85 @@ const GameBoard = (() => {
     return emptyPositions[randomIndex];
   }
 
-  const calculatePossibleMoves = (visitedPositions, currLevel, AImark, currMark, resultScores) => {
-    var nextMark = currMark == 'x' ? 'o' : 'x';
-    var calculatedScore = 0;
-    currLevel++;
-    console.log('reached ainextmove()');
+  const calculateScore = (AImark, depth, isAImove) => {
+    var result = gameOver();
 
-    for (var i = 0; i < emptyPositions.length; i++) {
-      if (visitedPositions[i] == false) {
-        visitedPositions[i] = true;
-
-        var x = emptyPositions[i][0];
-        var y = emptyPositions[i][1];
-        boardArray[x][y] = currMark;
-        targetedPosition = [x, y];
-
-        var result = gameOver();
-        if (result != 'continue') {
-
-          if (result == AImark) {
-            calculatedScore = 100 - currLevel;
-          }
-          else if (result == 'draw') {
-            calculatedScore = 0 - currLevel;
-          }
-          else {
-            calculatedScore = -100 + currLevel;
-          }
-          // visitedPositions[i] = false;
-          // removeFromBoard(x, y);
-          return calculatedScore;
-        }
-        else {
-          resultScores.push(GetAINextMove(visitedPositions, currLevel, AImark, nextMark, resultScores));
-          visitedPositions[i] = false;
-          removeFromBoard(x, y);
-        }
-
-        //remove marker from the position on the board        
+    if (result != 'continue') {
+      if (result == 'draw') {
+        return 0 - depth;
+      } 
+      else if (result == AImark) {
+        return -1 - depth;
+      }
+      else {
+        return 1 - depth;
       }
     }
 
-    return resultScores;
+    if (isAImove) {
+      //current move is AImove so next move will be player's move
+      var bestScore = Infinity;
+      var playerMark = AImark == 'o' ? 'x' : 'o';
+
+      for (var i = 0; i < emptyPositions.length; i++) {
+        var x = emptyPositions[i][0];
+        var y = emptyPositions[i][1];
+        if (boardArray[x][y] == '') {
+          boardArray[x][y] = playerMark;
+
+          var score = calculateScore(AImark, depth + 1, false);
+          boardArray[x][y] = '';
+          bestScore = Math.min(score, bestScore);
+          // if (score < bestScore) {
+          //   bestScore = score;
+          // }
+        }       
+      }
+
+      return bestScore;
+    }
+    else {
+      //current move is player's move so next move will be AImove
+      var bestScore = -Infinity;
+
+      for (var i = 0; i < emptyPositions.length; i++) {
+        var x = emptyPositions[i][0];
+        var y = emptyPositions[i][1];
+        if (boardArray[x][y] == '') {
+          boardArray[x][y] = AImark;
+
+          var score = calculateScore(AImark, depth + 1, true);
+          boardArray[x][y] = '';
+          bestScore = Math.max(score, bestScore);
+          // if (score > bestScore) {
+          //   bestScore = score;
+          // }
+        }       
+      }
+
+      return bestScore;
+    }
   }
 
   const GetAINextMove = (AImark) => {
-    var visitedPositions = Array(emptyPositions.length).fill(false);
-    console.log({visitedPositions});
+    var bestScore = -Infinity;
+    var move;
 
-    var resultScores = calculatePossibleMoves(visitedPositions, 0, AImark, AImark, []);
+    for (var i = 0; i < emptyPositions.length; i++) {
+      var x = emptyPositions[i][0];
+      var y = emptyPositions[i][1];
+      boardArray[x][y] = AImark;
 
-    var targetedIndex = 0;
-    var max = resultScores[0];
-    console.log({resultScores});
-    for (var i = 0; i < resultScores.length; i++) {
-      if (resultScores[i] > max) {
-        targetedIndex = i;
+      var score = calculateScore(AImark, 0, true);
+      boardArray[x][y] = '';
+      if (score > bestScore) {
+        bestScore = score;
+        move = [x, y];
       }
+
     }
 
-    return [emptyPositions[targetedIndex][0], emptyPositions[targetedIndex][1]];
+    return move;
   }
 
   return {
