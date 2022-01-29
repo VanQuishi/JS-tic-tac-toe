@@ -1,14 +1,17 @@
 const boardCells = document.getElementsByClassName('cell');
 const optionPanel = document.getElementById('optionPanel');
+const infoPanel = document.getElementById('infoPanel');
+const userMark = document.getElementById('userMark');
+const AImark = document.getElementById('AImark');
 var user = '';
 var ai = '';
 
 const GameBoard = (() => {
   
   // var boardArray = [
-  //   ['x', '', 'o'],
+  //   ['X', '', 'O'],
   //   ['', 'o', ''],
-  //   ['x', 'x', 'o']
+  //   ['X', 'X', 'O']
   // ]
 
   var boardArray = [
@@ -142,7 +145,7 @@ const GameBoard = (() => {
     if (isAImove) {
       //current move is AImove so next move will be player's move
       var bestScore = -Infinity;
-      var playerMark = AImark == 'o' ? 'x' : 'o';
+      var playerMark = AImark == 'O' ? 'X' : 'O';
       for (var i = 0; i < emptyPositions.length; i++) {
         var x = emptyPositions[i][0];
         var y = emptyPositions[i][1];
@@ -221,7 +224,7 @@ const DisplayController = (() => {
     if (winMark == 'draw') {
       console.log('draw!');
       return true;
-    } else if (winMark == 'x' || winMark == 'o') {
+    } else if (winMark == 'X' || winMark == 'O') {
       winMark == playerA._mark ? console.log(playerA._name + ' wins') : console.log(playerB._name +' wins');
       var winner = winMark == playerA._mark ? playerA._name : playerB._name;
       return true;
@@ -236,33 +239,34 @@ const DisplayController = (() => {
     markedCell.innerHTML = player._mark;
   }
 
-  const playGame = (cell, playerA, playerB) => {
-    var coordinate = cell.id.split('');
-    var AINextMove = [];
+  const playGame = (cellID, playerA, playerB) => {
+    console.log({cellID});
+    var coordinate;
+    if (cellID != '') {
+      coordinate = cellID.split('');
+    }
 
     if (turn % 2 == 0) {
-      if (playerA._mark == 'x') {
+      if (playerA._mark == 'X') {
         displayMarkOnClick(coordinate[1], coordinate[2], playerA);
       } else {
         if (difficulty == 'easy') {
-          AINextMove = GameBoard.randomizeNextMove();
+          coordinate = GameBoard.randomizeNextMove();
         } else {
-          AINextMove = GameBoard.GetAINextMove('x');
-          console.log({AINextMove});
+          coordinate = GameBoard.GetAINextMove('X');
         }      
-        displayMarkOnClick(AINextMove[0], AINextMove[1], playerB);
+        displayMarkOnClick(coordinate[0], coordinate[1], playerB);
       }
     } else {
-      if (playerA._mark == 'o') {
+      if (playerA._mark == 'O') {
         displayMarkOnClick(coordinate[1], coordinate[2], playerA);
       } else {
         if (difficulty == 'easy') {
-          AINextMove = GameBoard.randomizeNextMove();
+          coordinate = GameBoard.randomizeNextMove();
         } else {
-          AINextMove = GameBoard.GetAINextMove('o');
-          console.log({AINextMove});
+          coordinate = GameBoard.GetAINextMove('O');
         } 
-        displayMarkOnClick(AINextMove[0], AINextMove[1], playerB);
+        displayMarkOnClick(coordinate[0], coordinate[1], playerB);
       }
     }
 
@@ -284,32 +288,45 @@ const DisplayController = (() => {
   };
 })();
 
+function enableGameBoard() {
+  //boardCells are not strictly Array but a HTMLCollection.
+  // We need to cast it in Array to use map
+  Array.from(boardCells).map((cell) => {
+    cell.addEventListener("click", function() {
+      //first call of function is for player move
+      DisplayController.playGame(this.id, user, ai);
+
+      //second call of function is for AI move
+      DisplayController.playGame(this.id, user, ai);
+    })
+  });
+}
+
 function initializePlayer(mark) {
-  if (mark == 'x') {
-    user = Player('user', 'x');
-    ai = Player('AI', 'o');
+  if (mark == 'X') {
+    user = Player('user', 'X');
+    ai = Player('AI', 'O');
+
+    userMark.innerHTML = 'X';
+    AImark.innerHTML = 'O';
   } else {
-    user = Player('user', 'o');
-    ai = Player('AI', 'x');
+    user = Player('user', 'O');
+    ai = Player('AI', 'X');
+
+    userMark.innerHTML = 'O';
+    AImark.innerHTML = 'X';
+
+    DisplayController.playGame('', user, ai);
   }
 
   optionPanel.style.display = 'none';
+  infoPanel.style.display = 'flex';
+  enableGameBoard();
 }
 
 DisplayController.setDifficulty('difficult');
 GameBoard.displayBoard();
 
-//boardCells are not strictly Array but a HTMLCollection.
-// We need to cast it in Array to use map
-Array.from(boardCells).map((cell) => {
-  cell.addEventListener("click", function() {
-    //first call of function is for player move
-    DisplayController.playGame(this, user, ai);
-
-    //second call of function is for AI move
-    DisplayController.playGame(this, user, ai);
-  })
-});
 
 
 
@@ -317,7 +334,8 @@ Array.from(boardCells).map((cell) => {
 /*
 x Make random move for easy mode 
 x Use Minimax for advanced mode
-- Disable click event for all board cells before user chooses a mark
+x Disable click event for all board cells before user chooses a mark
 x Add a time delay before AI move for a natural experience
-- Code Minimax decision rule for AI
+x Code Minimax decision rule for AI
+- Code the case when AI mark is X and has to make the first move
 */

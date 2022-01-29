@@ -32,8 +32,8 @@ body{
   font-weight: bold;
 }
 
-.infoPanel {
-  display: flex; 
+#infoPanel {
+  display: none; 
   justify-content: space-between;
   align-items: center;
   gap: 4rem;

@@ -14,20 +14,20 @@
   <div id="optionPanel">
     <div>Choose your mark:</div>
     <div class="optionBtn">
-      <button onClick="initializePlayer(this.innerHTML)">x</button>
-      <button onClick="initializePlayer(this.innerHTML)">o</button>
+      <button onClick="initializePlayer(this.innerHTML)">X</button>
+      <button onClick="initializePlayer(this.innerHTML)">O</button>
     </div>
   </div>
   
 
-  <div class="infoPanel">
+  <div id="infoPanel">
     <div class="playerInfo">
-      <div>[MARK]</div>
-      <div>Player name</div>
+      <div id="userMark"></div>
+      <div>You</div>
     </div>
     <div class="playerInfo">
-      <div>[MARK]</div>
-      <div>Player name</div>
+      <div id="AImark"></div>
+      <div>AI</div>
     </div>
   </div>
 
@@ -50,7 +50,7 @@
   </div>
 
   <div>
-    Footer
+    Create By Chau
   </div>
 
   <script src="game.js"></script>
