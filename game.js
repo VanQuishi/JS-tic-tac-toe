@@ -5,22 +5,28 @@ var ai = '';
 
 const GameBoard = (() => {
   
+  // var boardArray = [
+  //   ['x', '', 'o'],
+  //   ['', 'o', ''],
+  //   ['x', 'x', 'o']
+  // ]
+
   var boardArray = [
-    ['x', '', 'o'],
-    ['', 'o', ''],
-    ['x', 'x', 'o']
+    ['', '', ''],
+    ['', '', ''],
+    ['', '', '']
+  ]
+
+  var emptyPositions = [
+    [0,0], [0,1], [0,2],
+    [1,0], [1,1], [1,2],
+    [2,0], [2,1], [2,2]
   ]
 
   // var emptyPositions = [
-  //   [0,0], [0,1], [0,2],
-  //   [1,0], [1,1], [1,2],
-  //   [2,0], [2,1], [2,2]
+  //   [0,1], 
+  //   [1,0], [1,2],
   // ]
-
-  var emptyPositions = [
-    [0,1], 
-    [1,0], [1,2],
-  ]
 
   // function displayBoard() {
   //   boardArray.map( function(row, rowIndex) {
@@ -55,14 +61,14 @@ const GameBoard = (() => {
     for (let i = 0; i < 3; i++) {
       if (boardArray[i][0] != '') {
         if (boardArray[i][0] == boardArray[i][1] && boardArray[i][0] == boardArray[i][2]) {
-          console.log('game over, row match!');
+          //console.log('game over, row match!');
           return boardArray[i][0];
         }
       }
 
       if (boardArray[0][i] != '') {
         if (boardArray[0][i] == boardArray[1][i] && boardArray[0][i] == boardArray[2][i]) {
-          console.log('game over, column match!');
+          //console.log('game over, column match!');
           return boardArray[0][i];
         }
       }
@@ -70,7 +76,7 @@ const GameBoard = (() => {
 
     if ((boardArray[0][0] == boardArray[1][1] && boardArray[1][1] == boardArray[2][2]) || 
     (boardArray[0][2] == boardArray[1][1] && boardArray[1][1] == boardArray[2][0])) {
-      console.log('game over, diagonal match!');
+      //console.log('game over, diagonal match!');
       return boardArray[1][1];
     }
 
@@ -85,7 +91,7 @@ const GameBoard = (() => {
     }
 
     if (filledBoardFlag) {
-      console.log('draw!');
+      //console.log('draw!');
       return 'draw';
     } else {
       return 'continue';
@@ -123,21 +129,20 @@ const GameBoard = (() => {
 
     if (result != 'continue') {
       if (result == 'draw') {
-        return 0 - depth;
+        return 0;
       } 
       else if (result == AImark) {
         return -1 - depth;
       }
       else {
-        return 1 - depth;
+        return 1 + depth;
       }
     }
 
     if (isAImove) {
       //current move is AImove so next move will be player's move
-      var bestScore = Infinity;
+      var bestScore = -Infinity;
       var playerMark = AImark == 'o' ? 'x' : 'o';
-
       for (var i = 0; i < emptyPositions.length; i++) {
         var x = emptyPositions[i][0];
         var y = emptyPositions[i][1];
@@ -146,10 +151,7 @@ const GameBoard = (() => {
 
           var score = calculateScore(AImark, depth + 1, false);
           boardArray[x][y] = '';
-          bestScore = Math.min(score, bestScore);
-          // if (score < bestScore) {
-          //   bestScore = score;
-          // }
+          bestScore = Math.max(score, bestScore);
         }       
       }
 
@@ -157,7 +159,7 @@ const GameBoard = (() => {
     }
     else {
       //current move is player's move so next move will be AImove
-      var bestScore = -Infinity;
+      var bestScore = Infinity;
 
       for (var i = 0; i < emptyPositions.length; i++) {
         var x = emptyPositions[i][0];
@@ -167,10 +169,7 @@ const GameBoard = (() => {
 
           var score = calculateScore(AImark, depth + 1, true);
           boardArray[x][y] = '';
-          bestScore = Math.max(score, bestScore);
-          // if (score > bestScore) {
-          //   bestScore = score;
-          // }
+          bestScore = Math.min(score, bestScore);
         }       
       }
 
@@ -179,9 +178,8 @@ const GameBoard = (() => {
   }
 
   const GetAINextMove = (AImark) => {
-    var bestScore = -Infinity;
+    var bestScore = Infinity;
     var move;
-
     for (var i = 0; i < emptyPositions.length; i++) {
       var x = emptyPositions[i][0];
       var y = emptyPositions[i][1];
@@ -189,11 +187,10 @@ const GameBoard = (() => {
 
       var score = calculateScore(AImark, 0, true);
       boardArray[x][y] = '';
-      if (score > bestScore) {
+      if (score < bestScore) {
         bestScore = score;
         move = [x, y];
       }
-
     }
 
     return move;
@@ -229,7 +226,6 @@ const DisplayController = (() => {
       var winner = winMark == playerA._mark ? playerA._name : playerB._name;
       return true;
     } else {
-      console.log('game is not finished');
       return false;
     }
   };
@@ -244,16 +240,14 @@ const DisplayController = (() => {
     var coordinate = cell.id.split('');
     var AINextMove = [];
 
-    console.log({turn});
     if (turn % 2 == 0) {
       if (playerA._mark == 'x') {
         displayMarkOnClick(coordinate[1], coordinate[2], playerA);
       } else {
-        console.log({difficulty});
         if (difficulty == 'easy') {
           AINextMove = GameBoard.randomizeNextMove();
         } else {
-          AINextMove = GameBoard.GetAINextMove('o');
+          AINextMove = GameBoard.GetAINextMove('x');
           console.log({AINextMove});
         }      
         displayMarkOnClick(AINextMove[0], AINextMove[1], playerB);
@@ -262,11 +256,10 @@ const DisplayController = (() => {
       if (playerA._mark == 'o') {
         displayMarkOnClick(coordinate[1], coordinate[2], playerA);
       } else {
-        console.log({difficulty});
         if (difficulty == 'easy') {
           AINextMove = GameBoard.randomizeNextMove();
         } else {
-          AINextMove = GameBoard.GetAINextMove('x');
+          AINextMove = GameBoard.GetAINextMove('o');
           console.log({AINextMove});
         } 
         displayMarkOnClick(AINextMove[0], AINextMove[1], playerB);
@@ -298,7 +291,6 @@ function initializePlayer(mark) {
   } else {
     user = Player('user', 'o');
     ai = Player('AI', 'x');
-    console.log(ai._mark);
   }
 
   optionPanel.style.display = 'none';
@@ -324,8 +316,8 @@ Array.from(boardCells).map((cell) => {
 //To-Do:
 /*
 x Make random move for easy mode 
-- Use Minimax for advanced mode
+x Use Minimax for advanced mode
 - Disable click event for all board cells before user chooses a mark
-- Add a time delay before AI move for a natural experience
+x Add a time delay before AI move for a natural experience
 - Code Minimax decision rule for AI
 */
