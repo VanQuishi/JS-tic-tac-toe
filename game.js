@@ -1,6 +1,8 @@
 const boardCells = document.getElementsByClassName('cell');
 const optionPanel = document.getElementById('optionPanel');
 const infoPanel = document.getElementById('infoPanel');
+const userWinBanner = document.getElementById('userWinBanner');
+const aiWinBanner = document.getElementById('aiWinBanner');
 const userMark = document.getElementById('userMark');
 const AImark = document.getElementById('AImark');
 var user = '';
@@ -213,10 +215,16 @@ const DisplayController = (() => {
     if (winMark == 'draw') {
       console.log('draw!');
       return true;
+
     } else if (winMark == 'X' || winMark == 'O') {
-      winMark == playerA._mark ? console.log(playerA._name + ' wins') : console.log(playerB._name +' wins');
-      var winner = winMark == playerA._mark ? playerA._name : playerB._name;
+      if (winMark == playerA._mark) {
+        userWinBanner.style.display = '';
+      } else {
+        aiWinBanner.style.display = '';
+      }
+    
       return true;
+
     } else {
       return false;
     }
@@ -259,7 +267,13 @@ const DisplayController = (() => {
       }
     }
 
-    DisplayController.announceWinner(playerA, playerB);
+    var isOver = DisplayController.announceWinner(playerA, playerB);
+
+    if (isOver == true) {
+      Array.from(boardCells).map((cell) => {
+        cell.removeEventListener("click");
+      });
+    }
 
     turn++;
     
