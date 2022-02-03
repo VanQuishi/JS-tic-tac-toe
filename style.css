@@ -1,6 +1,7 @@
 body{
   height: 100vh;
   margin: 0;
+  padding: 0;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -47,8 +48,13 @@ body{
 }
 
 .board {
+  width: 420px;
+  height: 420px;
   display: flex; 
-  flex-direction: column;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  align-content: flex-start;
 }
 
 .boardRow {
@@ -58,8 +64,14 @@ body{
 
 .cell {
   border: 1px solid black;
-  padding: 4rem;
   cursor: pointer;
+  width: 30%;
+  height: 30%;
+  background-color: #f5f5f5;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 4rem;
 }
 .cell:hover{
   transform: scale(1.15);

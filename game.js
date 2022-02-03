@@ -7,12 +7,6 @@ var user = '';
 var ai = '';
 
 const GameBoard = (() => {
-  
-  // var boardArray = [
-  //   ['X', '', 'O'],
-  //   ['', 'o', ''],
-  //   ['X', 'X', 'O']
-  // ]
 
   var boardArray = [
     ['', '', ''],
@@ -25,11 +19,6 @@ const GameBoard = (() => {
     [1,0], [1,1], [1,2],
     [2,0], [2,1], [2,2]
   ]
-
-  // var emptyPositions = [
-  //   [0,1], 
-  //   [1,0], [1,2],
-  // ]
 
   // function displayBoard() {
   //   boardArray.map( function(row, rowIndex) {
