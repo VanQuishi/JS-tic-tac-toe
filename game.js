@@ -3,8 +3,10 @@ const optionPanel = document.getElementById('optionPanel');
 const infoPanel = document.getElementById('infoPanel');
 const userWinBanner = document.getElementById('userWinBanner');
 const aiWinBanner = document.getElementById('aiWinBanner');
+const drawBanner = document.getElementById('drawBanner');
 const userMark = document.getElementById('userMark');
 const AImark = document.getElementById('AImark');
+var controller = new AbortController();
 var user = '';
 var ai = '';
 
@@ -213,7 +215,7 @@ const DisplayController = (() => {
     var winMark = GameBoard.gameOver();
 
     if (winMark == 'draw') {
-      console.log('draw!');
+      drawBanner.style.display = '';
       return true;
 
     } else if (winMark == 'X' || winMark == 'O') {
@@ -222,7 +224,6 @@ const DisplayController = (() => {
       } else {
         aiWinBanner.style.display = '';
       }
-    
       return true;
 
     } else {
@@ -271,7 +272,7 @@ const DisplayController = (() => {
 
     if (isOver == true) {
       Array.from(boardCells).map((cell) => {
-        cell.removeEventListener("click");
+        cell.removeEventListener("click", playGameOnClick);
       });
     }
 
@@ -295,7 +296,7 @@ function enableGameBoard() {
   //boardCells are not strictly Array but a HTMLCollection.
   // We need to cast it in Array to use map
   Array.from(boardCells).map((cell) => {
-    cell.addEventListener("click", function() {
+    cell.addEventListener("click", function playGameOnClick() {
       //first call of function is for player move
       DisplayController.playGame(this.id, user, ai);
 
@@ -303,7 +304,19 @@ function enableGameBoard() {
       DisplayController.playGame(this.id, user, ai);
     })
   });
+  // Array.from(boardCells).map((cell) => {
+  //   cell.addEventListener("click", playGameOnClick);
+  // });
 }
+
+// function playGameOnClick(cell) {
+//   console.log({cell});
+//   //first call of function is for player move
+//   DisplayController.playGame(cell.id, user, ai);
+
+//   //second call of function is for AI move
+//   DisplayController.playGame(cell.id, user, ai);
+// }
 
 function initializePlayer(mark) {
   if (mark == 'X') {
