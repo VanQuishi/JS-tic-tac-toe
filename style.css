@@ -16,15 +16,17 @@ body{
   font-size: 4rem;
 }
 
-#optionPanel {
+.optionPanel {
   display: flex;
   flex-direction: column;
   gap: 10px;
+  text-align: center;
 }
 
 .optionBtn {
   display: flex;
   justify-content: space-between;
+  gap: 20px;
 }
 .optionBtn button {
   border-radius: 0.2rem;
@@ -43,9 +45,28 @@ body{
 }
 
 .resultBanner{
-  border: 1px solid black;
+  border: 2px solid  #365359;
   background-color: #F2D9D0;
   border-radius: 0.25rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 0.5rem 2rem 0.5rem 2rem;
+}
+
+.tryAgainBtn {
+  border: 1px solid  #365359;
+  color: #365359;
+  padding: 0.5rem;
+  border-radius: 10px;
+  font-size: 1rem;
+}
+.tryAgainBtn:hover {
+  background-color: #365359;
+  color: #fff;
+  transition: 0.2s;
+  cursor: pointer;
 }
 
 .playerInfo {
@@ -100,4 +121,14 @@ body{
 
 .no-borderbottom {
   border-bottom: 0px;
+}
+
+.footer {
+  background-color: #F2D9D0;
+  width: 100%;
+  padding: 0.5rem 0 0.5rem 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }

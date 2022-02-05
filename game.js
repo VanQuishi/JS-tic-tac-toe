@@ -1,9 +1,11 @@
 const boardCells = document.getElementsByClassName('cell');
-const optionPanel = document.getElementById('optionPanel');
+const markOptionPanel = document.getElementById('markOptionPanel');
+const difficultyOptionPanel = document.getElementById('difficultyOptionPanel');
 const infoPanel = document.getElementById('infoPanel');
 const userWinBanner = document.getElementById('userWinBanner');
 const aiWinBanner = document.getElementById('aiWinBanner');
 const drawBanner = document.getElementById('drawBanner');
+const listOfTryAgainBtn = document.getElementsByClassName('tryAgainBtn');
 const userMark = document.getElementById('userMark');
 const AImark = document.getElementById('AImark');
 var controller = new AbortController();
@@ -238,7 +240,6 @@ const DisplayController = (() => {
   }
 
   const playGame = (cellID, playerA, playerB) => {
-    console.log({cellID});
     var coordinate;
     if (cellID != '') {
       coordinate = cellID.split('');
@@ -270,10 +271,12 @@ const DisplayController = (() => {
 
     var isOver = DisplayController.announceWinner(playerA, playerB);
 
+    //if game is over, remove all eventListeners on the cells
     if (isOver == true) {
       Array.from(boardCells).map((cell) => {
-        cell.removeEventListener("click", playGameOnClick);
+        cell.replaceWith(cell.cloneNode(true));
       });
+      return;
     }
 
     turn++;
@@ -304,19 +307,7 @@ function enableGameBoard() {
       DisplayController.playGame(this.id, user, ai);
     })
   });
-  // Array.from(boardCells).map((cell) => {
-  //   cell.addEventListener("click", playGameOnClick);
-  // });
 }
-
-// function playGameOnClick(cell) {
-//   console.log({cell});
-//   //first call of function is for player move
-//   DisplayController.playGame(cell.id, user, ai);
-
-//   //second call of function is for AI move
-//   DisplayController.playGame(cell.id, user, ai);
-// }
 
 function initializePlayer(mark) {
   if (mark == 'X') {
@@ -335,12 +326,23 @@ function initializePlayer(mark) {
     DisplayController.playGame('', user, ai);
   }
 
-  optionPanel.style.display = 'none';
+  markOptionPanel.style.display = 'none';
   infoPanel.style.display = 'flex';
   enableGameBoard();
 }
 
-DisplayController.setDifficulty('difficult');
+function setDifficulty(option) {
+  DisplayController.setDifficulty(option);
+  difficultyOptionPanel.style.display = 'none';
+  markOptionPanel.style.display = 'flex';
+}
+
+Array.from(listOfTryAgainBtn).map((button) => {
+  button.addEventListener("click", function refresh() {
+    window.location.reload();
+  })
+});
+
 GameBoard.displayBoard();
 
 

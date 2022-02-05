@@ -11,7 +11,7 @@
     Tic Tac Toe
   </div>
 
-  <div id="optionPanel">
+  <div class="optionPanel" id="markOptionPanel" style="display: none;">
     <div>Choose your mark:</div>
     <div class="optionBtn">
       <button onClick="initializePlayer(this.innerHTML)">X</button>
@@ -19,6 +19,13 @@
     </div>
   </div>
   
+  <div class="optionPanel" id="difficultyOptionPanel">
+    <div>Choose difficulty:</div>
+    <div class="optionBtn">
+      <button onClick="setDifficulty('easy')">Newbie</button>
+      <button onClick="setDifficulty('difficult')">Master</button>
+    </div>
+  </div>
 
   <div id="infoPanel">
     <div class="playerInfo">
@@ -33,16 +40,17 @@
 
   <div class="resultBanner" id="userWinBanner" style="display: none;">
     <p>You're the best of class, I see.</p>
+    <button class="tryAgainBtn">Try Again</button>
   </div>
 
   <div class="resultBanner" id="aiWinBanner" style="display: none;">
     <p>Too bad :( One more time?</p>
-    <button>Try Again</button>
+    <button class="tryAgainBtn">Try Again</button>
   </div>
 
   <div class="resultBanner" id="drawBanner" style="display: none;">
     <p>Draw match!</p>
-    <button>Try Again</button>
+    <button class="tryAgainBtn">Try Again</button>
   </div>
 
   <div class="board">
@@ -63,8 +71,11 @@
     
   </div>
 
-  <div>
-    Created By Chau
+  <div class="footer">
+    <a href="https://github.com/VanQuishi/JS-tic-tac-toe" target="_blank">
+      <img src="./assets/GitHub-Mark-32px.png">
+    </a>  
+    Made By Chau
   </div>
 
   <script src="game.js"></script>
