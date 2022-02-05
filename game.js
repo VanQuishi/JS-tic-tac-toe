@@ -344,17 +344,3 @@ Array.from(listOfTryAgainBtn).map((button) => {
 });
 
 GameBoard.displayBoard();
-
-
-
-
-//To-Do:
-/*
-x Make random move for easy mode 
-x Use Minimax for advanced mode
-x Disable click event for all board cells before user chooses a mark
-x Add a time delay before AI move for a natural experience
-x Code Minimax decision rule for AI
-x Code the case when AI mark is X and has to make the first move
-- Make front end looks nicer and display result 
-*/
